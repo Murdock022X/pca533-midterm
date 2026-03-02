@@ -1,23 +1,46 @@
 \section{Cornerstone}
 \label{sec:cornerstone}
 
-To characterize Cornerstone's performance we first need to understand the steps it takes to calculate an octree or in the case of a distributed locally essential tree how it subdivides the domain and calculates the focused octree.
+To characterize Cornerstone's performance we first need to understand the algorithmic steps. This involves iterating over several elementwise functions until reaching a convergence criterion.
 
-\begin{figure}[h!] % The 'figure' environment manages the image as a float
-    \centering % Centers the image on the page
-    \includegraphics[width=0.45\textwidth]{assets/leaves_morton.png} % Includes the image and sets the width
-    \caption{The leaves of an octree colored with respect to their Morton curve. The red trace plots the Morton curve path through the leaves.} % Adds a caption below the image
-    \label{fig:morton_leaves} % Allows you to reference the figure in your text
+\subsection{Space Filling Curves}
+
+The first step which is common to any octree construction method is the calculation of the space filling curve. Informally a space filling curve will take points existing in space and map them to integer keys, when one sorts the original particles based on these keys and traverses the path through them the resulting curve will recursively move through the domain octant by octant (in the case of three dimensional points). In this way a space filling curve is a kind of fractal.
+
+We are interested in two types of space filling curves namely Morton Z-order curves and Hilbert curves. The path of a Morton Z-order curve may be viewed in Figure \ref{fig:morton_leaves} and shows the distinct z-pattern. Morton codes are computationally efficient to calculate but as is also evident visually the curve may "jump" octants resulting in unfavorable communication patterns between nodes. The Hilbert curve on the other hand takes on a U shape, see Figure \ref{fig:hilbert_leaves}. Hilbert codes offer a "compact" mapping which may reduce the cost of communication but come at the cost in increased computational inefficiency.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{assets/leaves_morton.png}
+    \caption{The leaves of an octree colored with respect to their Morton Z-order curve. The red trace plots the curves path through the leaves.}
+    \label{fig:morton_leaves}
 \end{figure}
 
 As you can see in Figure \ref{fig:morton_leaves}, this is how you include an image in LaTeX.
 
-\begin{figure}[h!] % The 'figure' environment manages the image as a float
-    \centering % Centers the image on the page
-    \includegraphics[width=0.45\textwidth]{assets/leaves_hilbert.png} % Includes the image and sets the width
-    \caption{The leaves of an octree colored with respect to their Hilbert curve. The red trace plots the Hilbert curve path through the leaves.} % Adds a caption below the image
-    \label{fig:hilbert_leaves} % Allows you to reference the figure in your text
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{assets/leaves_hilbert.png}
+    \caption{The leaves of an octree colored with respect to their Hilbert curve. The red trace plots the Hilbert curve path through the leaves.}
+    \label{fig:hilbert_leaves}
 \end{figure}
 
 As you can see in Figure \ref{fig:hilbert_leaves}, this is how you include an image in LaTeX.
 
+\begin{table}[h!]
+    \centering
+    \caption{Cornerstone Parameters}
+    \label{tab:my_table}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Parameter} & \textbf{Description} \\
+        \hline
+        Precision & FP64 or FP32 \\
+        $\theta$ & The MAC parameter \\
+        $N_{crit}$ & Maximal \# of points in a leaf \\ 
+        $h$ & Smoothing parameter \\
+        $L$ & The maximal depth of the octree \\
+        SFC & Morton or Hilbert \\
+        \hline
+    \end{tabular}
+\end{table}
